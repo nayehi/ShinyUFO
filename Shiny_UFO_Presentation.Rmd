@@ -1,0 +1,84 @@
+---
+title: "Shiny UFO Presentation"
+author: "nayehi"
+date: "April 2, 2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(warn=-1)
+
+```
+
+## Introduction
+
+This project describes a Shiny Application that displays information about UFO sightings in the United States. 
+
+The application uses Leaflet to generate a U.S. map showing the phenomenon of UFO sightings by location. The user chooses the year to display by adjusting a slider.
+
+Clusters are generated interactively, reforming as the user zooms in or out. 
+
+Each individual observation, when clicked, displays a popup showing the associated UFO Shape and Date. 
+
+In addition, a table beneath the map displays the total count for each UFO Shape for the year.
+
+Files associated with this project are <a href="https://github.com/nayehi/ShinyUFO" target="_blank">published on GitHub</a>.
+
+## Data
+
+This project uses UFO Sightings data from the <a href="http://www.nuforc.org/index.html" target="_blank">National UFO Reporting Center (NUFORC)</a>, which is dedicated to the Collection and Dissemination of Objective UFO Data.
+
+The data was downloaded from the <a href="https://www.kaggle.com/NUFORC/ufo-sightings target="_blank">UFO Sightings page on Kaggle</a>. The file was 'scrubbed.csv', which includes only records that have location and time values. 
+
+This dataset described 80,332 reports of UFO sightings over the last century. For this project, only records with 'us' in the Country field were included. This resulted in a dataset of 64,133 observations of 11 variables. The data was further subset to include only the datetime, shape, latitude, and longitude columns. A new field, date, was created from datetime by extracting the date via lubridate.
+
+
+## The App - Example Code
+
+```{r setup2, echo=FALSE, include=FALSE}
+library(shiny)
+library(leaflet)
+library(dplyr)
+library(lubridate)
+library(RColorBrewer)
+cols = brewer.pal(4, "BuPu") 
+cols = colorRampPalette(cols)(35)
+ufo_dat <- read.csv("ufo_scrubbed.csv",header=TRUE,sep=",")
+ufo_final <- data.frame(ufo_dat)
+ufo_final$latitude <- as.numeric(as.character(ufo_final$latitude))
+ufo_final$longitude <- as.numeric(as.character(ufo_final$longitude))
+ufo_final$date <- as.Date(ufo_final$date, format = "%m/%d/%Y")
+ufo_final$year <- year(ufo_final$date)
+ufo_final <- subset(ufo_final,country=="us",na.rm=TRUE)
+ufo_final <- subset(ufo_final, year=="2014")
+pal <- colorFactor(
+palette = colorRampPalette(c('blue','black'))(length(ufo_final$shape)),domain=ufo_final$shape)
+```
+
+
+```{r mapcode, echo=TRUE, message=FALSE}
+
+m <- leaflet(ufo_final) %>%
+         setView(lng=-98.35,lat=39.50,zoom=3.5) %>%
+         addTiles() %>%
+           addMarkers(popup = ~as.character(ufo_final$shape), 
+               label = ~as.character(ufo_final$shape),
+               clusterOptions = markerClusterOptions
+               (lng = ~ufo_final$longitude,
+               lat = ~ufo_final$latitude)) %>%
+               fitBounds(lng1 = -120, lat1 = 30, 
+                         lng2 = -60, lat2=50) %>%
+               setView(lng=-98.35,lat=39.50,zoom=3.25)
+```
+
+## Map: UFO Sightings in U.S., 2014
+```{r showmap}
+year_selected <- c("2014")
+total_ufo <- c("Number of Observations: 1964")
+h1(year_selected,style="color:lightblue")
+h4(total_ufo)  
+m
+```
+<center><a href="https://nayehi.shinyapps.io/Shiny_UFO_US/" target="_blank">Go to the App!</a></center>
+

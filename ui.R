@@ -30,10 +30,10 @@ shinyUI(fluidPage(
   sidebarLayout(
     sidebarPanel(
       
-      p("Use the slider below to choose a year."),
+      p("Choose a year."),
       
-      
-      sliderInput("year","Year:",min=yearmin,max=yearmax,value=yearmax,sep="")
+      selectInput("year","Year:",years,selected=yearmax,multiple=FALSE,selectize=TRUE,width=NULL,size=NULL)
+
                  ),
     
     # Show a plot of the data

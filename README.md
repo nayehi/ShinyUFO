@@ -3,7 +3,7 @@ This repository holds files associated with the ShinyUFO Project.
 
 # Introduction
 This project describes a Shiny Application that displays information about UFO sightings in the United States.
-The application uses Leaflet to generate a U.S. map showing the phenomenon of UFO sightings by location. The user chooses the year to display by adjusting a slider.
+The application uses Leaflet to generate a U.S. map showing the phenomenon of UFO sightings by location. The user chooses the year to display.
 Clusters are generated interactively, reforming as the user zooms in or out.
 Each individual observation, when clicked, displays a popup showing the associated UFO Shape and Date.
 In addition, a table beneath the map displays the total count for each UFO Shape for the year.
